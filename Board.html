@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title></title>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" ></script>
+<link rel="stylesheet" type="text/css"  href="style.css"  />
+<script src="common_functions.js"></script>
+<script src="fireworks.js"></script>
+<script src="pawn_check.js"></script>
+<script src="knight_check.js"></script>
+<script src="king_check.js"></script>
+<script src="bishop_check.js"></script>
+<script src="checkpieces.js"></script>
+<script src="rook_check.js"></script>
+<script src="queen_check.js"></script>
+<script src="Player_info.js"></script>
+<script src="database.js"></script>
+<script src="clock.js"></script>
+
+
+
+<script>
+var cells;
+var names;
+
+function setup()
+{
+ 	cell = new Array(
+[document.getElementById("cell00"),document.getElementById("cell01"), document.getElementById("cell02"), document.getElementById("cell03"), document.getElementById("cell04"), document.getElementById("cell05"), document.getElementById("cell06"), document.getElementById("cell07")],
+ 		
+[document.getElementById("cell10"),document.getElementById("cell11"), document.getElementById("cell12"), document.getElementById("cell13"), document.getElementById("cell14"), document.getElementById("cell15"), document.getElementById("cell16"), document.getElementById("cell17")],
+ 			
+[document.getElementById("cell20"),document.getElementById("cell21"), document.getElementById("cell22"), document.getElementById("cell23"), document.getElementById("cell24"), document.getElementById("cell25"), document.getElementById("cell26"), document.getElementById("cell27")],
+ 				
+[document.getElementById("cell30"),document.getElementById("cell31"), document.getElementById("cell32"), document.getElementById("cell33"), document.getElementById("cell34"), document.getElementById("cell35"), document.getElementById("cell36"), document.getElementById("cell37")],
+ 					
+[document.getElementById("cell40"),document.getElementById("cell41"), document.getElementById("cell42"), document.getElementById("cell43"), document.getElementById("cell44"), document.getElementById("cell45"), document.getElementById("cell46"), document.getElementById("cell47")],
+ 						
+[document.getElementById("cell50"),document.getElementById("cell51"), document.getElementById("cell52"), document.getElementById("cell53"), document.getElementById("cell54"), document.getElementById("cell55"), document.getElementById("cell56"), document.getElementById("cell57")],
+ 							
+[document.getElementById("cell60"),document.getElementById("cell61"), document.getElementById("cell62"), document.getElementById("cell63"), document.getElementById("cell64"), document.getElementById("cell65"), document.getElementById("cell66"), document.getElementById("cell67")],
+ 								
+[document.getElementById("cell70"),document.getElementById("cell71"), document.getElementById("cell72"), document.getElementById("cell73"), document.getElementById("cell74"), document.getElementById("cell75"), document.getElementById("cell76"), document.getElementById("cell77")]
+); 
+		
+names = new Array(
+		["rook","white","9814"], ["knight","white","9816"], ["bishop","white","9815"], ["king","white","9813"], ["queen","white","9812"], ["pawn","white","9817"], 
+		["rook","black","9820"], ["knight","black","9822"], ["bishop","black","9821"], ["king","black","9819"], ["queen","black","9818"], ["pawn","black","9823"] 
+		);
+status = 1;
+}
+	
+	
+</script>
+
+<script>
+
+var temp ="";
+var piece_get ="";
+var cell_get_row = 0;
+var cell_get_col = 0;
+var cell_set_row = 0;
+var cell_set_col = 0;
+var piece_set ="";
+var check_get = 0;
+var check_set = 0;
+var count= 0;
+var bool = false;
+var click_equals_space = false;
+var player_white = 0;
+var player_black = 0;
+var player2_count =0;
+var player1_count = 0;
+var store_color;
+var status = 0;
+var bool_time = false;
+var player_countdown = "";
+
+	function MovePiece(row,col)
+	{	
+		if(status == 0)
+		return;
+	
+		if(count%2 ==0)
+		{
+			
+		  temp = cell[row][col];
+	     
+
+		  piece_get = temp.textContent; //get text of cell clicked
+		  check_get = piece_get.charCodeAt(0);
+
+		  cell_get_row = parseFloat(row);
+		  cell_get_col = parseFloat(col);
+	  	
+		    if(check_start_colour() == "white" && player_white == 0)
+		    {
+		    	player_white = 1;	
+		    	player_black = 0;
+		    	count = count ^ 1;	
+		    	document.getElementById("p1Color").style.color = "#FFD700";
+		        store_color = $(temp).css("background-color");
+	            temp.style.backgroundColor = "#FFD700";	
+	            if(bool_time == false)
+	            {
+	            	set_white_time();
+	            	player_countdown = "p1Countdown";
+	            	set_countdown();
+	            	bool_time = true;  
+	            } 	
+		    }
+		    
+			if(check_start_colour() == "black" && player_black == 0)
+			{
+				player_black = 1;
+				player_white = 0;
+				count = count ^ 1;
+				document.getElementById("p2Color").style.color = "#FFD700";
+			    store_color = $(temp).css("background-color");
+	            temp.style.backgroundColor = "#FFD700";
+	            if(bool_time == false)
+	            {
+	            	set_black_time(); 
+	            	player_countdown = "p2Countdown";
+	            	set_countdown();
+	            	bool_time = true;  
+	            } 	
+			}
+  
+		
+		}
+		else 
+		{	
+		  if(row == cell_get_row && col == cell_get_col) // if clicks on same cell, the pointer is removed
+		  {
+		  	//document.getElementById("display").innerHTML = "&nbsp;";
+		  	
+		  	if(player_black == 1)
+		  	{
+		  		player_white = 1;
+		  		player_black =0;
+		  		count = count ^ 1;
+		  			
+		  	}
+		  	else if(player_white == 1)
+		  	{
+		  		player_white = 0;
+		  		player_black =1;
+		    	count = count ^ 1;	
+		  	}
+		  	cell[cell_get_row][cell_get_col].style.backgroundColor = store_color;
+		  }
+		  else
+		  {
+			cell_set_row = parseFloat(row);
+			cell_set_col = parseFloat(col);
+			check_Piece();
+		  }	
+			
+		}
+		
+	}
+
+</script>
+
+</head>
+<body onload="process()" bgcolor = "black">
+<p id="rules"><button onclick=window.open('http://www.chess.com/learn-how-to-play-chess','Rating','width=550,height=500,0,status=0');>Help?</button></p>
+<table align="center" width=100% height="86%" style="border-collapse:collapse;" id="tbMain">
+	<tr>
+		<td id="pad" width="25%" background="playerBG .jpg">
+			<h2 id="p1Color">Player 1</h2>
+			<p>Name: <input type="text" id="p1name" maxlength="7" /></p>
+			<p id="error1" align="center" style="font-size: 1em; padding-left: 60px;">&nbsp;</p>
+			<p id="p1count" align="center" style="font-size: 1.5em;">Count: 0</p>
+			<p id="p1time"  align="center" style="font-size: 1.5em; color:white; ">00:00:00</p>
+			<p id="p1Countdown"  align="center" style="font-size: 1.5em; color:white; ">Countdown: 05:00</p>
+			<br />
+			<h2 id="p2Color">Player 2</h2>
+			<p>Name: <input type="text" id="p2name" maxlength="7"></p>
+			<p id="error2" align="center" style="font-size: 1em; padding-left: 60px;">&nbsp;</p>
+			<p id="p2count" align="center" style="font-size: 1.5em;">Count: 0</p>
+			<p id="p2time" align="center" style="font-size: 1.5em; color:white; ">00:00:00</p>
+			<p id="p2Countdown"  align="center" style="font-size: 1.5em; color:white; ">Countdown: 05:00</p>
+			<p style="padding-top: 80px;"><button onclick="Player_Info()" id="start" >Begin Game</button></p>
+			<br />
+
+		</td>
+		
+		<td id="pad" width="50%" bgcolor="black">
+			<h2>CHESS GAME</h2>
+			<table align="center" id="tb1">
+			<tr id="chessBoard">
+				<td class="white"onclick="MovePiece(0,0)" id="cell00">&#9814;</td>
+				<td class="black"onclick="MovePiece(0,1)" id="cell01">&#9816;</td>
+				<td class="white"onclick="MovePiece(0,2)" id="cell02">&#9815;</td>
+				<td class="black"onclick="MovePiece(0,3)" id="cell03">&#9813;</td>
+				<td class="white"onclick="MovePiece(0,4)" id="cell04">&#9812;</td>
+				<td class="black"onclick="MovePiece(0,5)" id="cell05">&#9815;</td>
+				<td class="white"onclick="MovePiece(0,6)" id="cell06">&#9816;</td>
+				<td class="black"onclick="MovePiece(0,7)" id="cell07">&#9814;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="black"onclick="MovePiece(1,0)" id="cell10">&#9817;</td>
+				<td class="white"onclick="MovePiece(1,1)" id="cell11">&#9817;</td>
+				<td class="black"onclick="MovePiece(1,2)" id="cell12">&#9817;</td>
+				<td class="white"onclick="MovePiece(1,3)" id="cell13">&#9817;</td>
+				<td class="black"onclick="MovePiece(1,4)" id="cell14">&#9817;</td>
+				<td class="white"onclick="MovePiece(1,5)" id="cell15">&#9817;</td>
+				<td class="black"onclick="MovePiece(1,6)" id="cell16">&#9817;</td>
+				<td class="white"onclick="MovePiece(1,7)" id="cell17">&#9817;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="white"onclick="MovePiece(2,0)" id="cell20">&nbsp;</td>
+				<td class="black"onclick="MovePiece(2,1)" id="cell21">&nbsp;</td>
+				<td class="white"onclick="MovePiece(2,2)" id="cell22">&nbsp;</td>
+				<td class="black"onclick="MovePiece(2,3)" id="cell23">&nbsp;</td>
+				<td class="white"onclick="MovePiece(2,4)" id="cell24">&nbsp;</td>
+				<td class="black"onclick="MovePiece(2,5)" id="cell25">&nbsp;</td>
+				<td class="white"onclick="MovePiece(2,6)" id="cell26">&nbsp;</td>
+				<td class="black"onclick="MovePiece(2,7)" id="cell27">&nbsp;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="black"onclick="MovePiece(3,0)" id="cell30">&nbsp;</td>
+				<td class="white"onclick="MovePiece(3,1)" id="cell31">&nbsp;</td>
+				<td class="black"onclick="MovePiece(3,2)" id="cell32">&nbsp;</td>
+				<td class="white"onclick="MovePiece(3,3)" id="cell33">&nbsp;</td>
+				<td class="black"onclick="MovePiece(3,4)" id="cell34">&nbsp;</td>
+				<td class="white"onclick="MovePiece(3,5)" id="cell35">&nbsp;</td>
+				<td class="black"onclick="MovePiece(3,6)" id="cell36">&nbsp;</td>
+				<td class="white"onclick="MovePiece(3,7)" id="cell37">&nbsp;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="white"onclick="MovePiece(4,0)" id="cell40">&nbsp;</td>
+				<td class="black"onclick="MovePiece(4,1)" id="cell41">&nbsp;</td>
+				<td class="white"onclick="MovePiece(4,2)" id="cell42">&nbsp;</td>
+				<td class="black"onclick="MovePiece(4,3)" id="cell43">&nbsp;</td>
+				<td class="white"onclick="MovePiece(4,4)" id="cell44">&nbsp;</td>
+				<td class="black"onclick="MovePiece(4,5)" id="cell45">&nbsp;</td>
+				<td class="white"onclick="MovePiece(4,6)" id="cell46">&nbsp;</td>
+				<td class="black"onclick="MovePiece(4,7)" id="cell47">&nbsp;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="black"onclick="MovePiece(5,0)" id="cell50">&nbsp;</td>
+				<td class="white"onclick="MovePiece(5,1)" id="cell51">&nbsp;</td>
+				<td class="black"onclick="MovePiece(5,2)" id="cell52">&nbsp;</td>
+				<td class="white"onclick="MovePiece(5,3)" id="cell53">&nbsp;</td>
+				<td class="black"onclick="MovePiece(5,4)" id="cell54">&nbsp;</td>
+				<td class="white"onclick="MovePiece(5,5)" id="cell55">&nbsp;</td>
+				<td class="black"onclick="MovePiece(5,6)" id="cell56">&nbsp;</td>
+				<td class="white"onclick="MovePiece(5,7)" id="cell57">&nbsp;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="white"onclick="MovePiece(6,0)" id="cell60">&#9823;</td>
+				<td class="black"onclick="MovePiece(6,1)" id="cell61">&#9823;</td>
+				<td class="white"onclick="MovePiece(6,2)" id="cell62">&#9823;</td>
+				<td class="black"onclick="MovePiece(6,3)" id="cell63">&#9823;</td>
+				<td class="white"onclick="MovePiece(6,4)" id="cell64">&#9823;</td>
+				<td class="black"onclick="MovePiece(6,5)" id="cell65">&#9823;</td>
+				<td class="white"onclick="MovePiece(6,6)" id="cell66">&#9823;</td>
+				<td class="black"onclick="MovePiece(6,7)" id="cell67">&#9823;</td>
+			</tr>
+			
+			<tr id="chessBoard">
+				<td class="black"onclick="MovePiece(7,0)" id="cell70">&#9820;</td>
+				<td class="white"onclick="MovePiece(7,1)" id="cell71">&#9822;</td>
+				<td class="black"onclick="MovePiece(7,2)" id="cell72">&#9821;</td>
+				<td class="white"onclick="MovePiece(7,3)" id="cell73">&#9819;</td>
+				<td class="black"onclick="MovePiece(7,4)" id="cell74">&#9818;</td>
+				<td class="white"onclick="MovePiece(7,5)" id="cell75">&#9821;</td>
+				<td class="black"onclick="MovePiece(7,6)" id="cell76">&#9822;</td>
+				<td class="white"onclick="MovePiece(7,7)" id="cell77">&#9820;</td>
+			</tr>
+			
+			</table>
+			<p id="winner" align="center" style="padding-top: 20px;"><button id="restart" onclick='javascript:location.reload(true)'>Restart</button></p>
+		</td>
+		
+		<td id="pad" width="30%" background="scoreBG.jpg">
+			<br />
+			<h2 align="center" >Top Scores</h2>
+
+			<table id="score" border="5" width=" 90%" height="60%" align="center">
+				<tr><th class="td1">Rank</th><th class="td2">Name</th><th class="td3">Moves</th><th class="td4">Time</th></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+				<tr><td class="td1">&nbsp;</td><td class="td2">&nbsp;</td><td class="td3">&nbsp;</td><td class="td4">&nbsp;</td></tr>
+			</table>
+			<div id="score2"></div>
+		</td>
+		</tr>
+</table>
+
+</body>
+</html>
